@@ -51,7 +51,7 @@ lhs ---> rhs = fromMaker $ maker (lhs, [[UD rhs]])
 lhs --> rhs = fromMaker $ NT lhs ---> rhs
 
 
--- | Use `&` to concatenate two user-defined symbols.
+-- | Use `&` to concatenate two symbols.
 --
 -- > table :: [ProductRule MySym]
 -- > table = productRules $ do
@@ -65,7 +65,7 @@ a & b = fromMaker $ maker (lhs, (UD b:r):rhs)
 
 
 -- | Use `|>` to represent "or" when the left hand side can produce two different expressions,
--- and the right side in a user-defined type.
+-- and the right side is a user-defined type.
 --
 -- > table :: [ProductRule MySym]
 -- > table = productRules $ do
@@ -94,7 +94,7 @@ m |/ Null = fromMaker $ maker (lhs, [Null]:rhs)
 _ |/ _ = error "(|/) can only be used in |/ Null"
 
 
--- | Use `>>>` iff the left side is `Start` and the first symbol on the right side is `Null`.
+-- | Use `>>>` iff the left hand side is `Start` and the first symbol on the right side is `Null`.
 --
 -- > table :: [ProductRule MySym]
 -- > table = productRules $ do

@@ -1,14 +1,12 @@
 name:                parser241
-version:             0.1.0.0
-synopsis:            A clean interface to create production rules using augmented grammars
-description:         Originally designed as a cheating tool for cs241 offered in the University of Waterloo.
-                     This package allows you to define production rules using clean augmented grammars.
-                     Please see README.md
+version:             0.1.0.2
+synopsis:            An interface to create production rules using augmented grammars
+description:         This package allows you to define production rules using clean augmented grammars.
 homepage:            https://github.com/YLiLarry/parser241-product-rule
 license:             BSD3
 license-file:        LICENSE
 author:              Yu Li
-maintainer:          ylilarry@example.com
+maintainer:          ylilarry@gmail.com
 copyright:           2015 Yu Li
 category:            Parser
 build-type:          Simple
@@ -18,10 +16,12 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Parser.ProductRule
+                     , Parser.ProductRule.Internal
+                     , Parser.ProductRule.Internal.Maker
+                     , Parser.ProductRule.Internal.Manager
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , mtl
-  ghc-options:         -haddock
   default-language:    Haskell2010
 
 test-suite ProductRule-test
@@ -38,4 +38,4 @@ test-suite ProductRule-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/ProductRule
+  location: https://github.com/YLiLarry/parser241-product-rule
