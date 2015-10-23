@@ -3,19 +3,11 @@ module Parser.ProductRule.Internal where
 import Data.Set (Set, member)
 
 -- | Two provided symbols besides user defined data.
---
---  `Start` represents the starting symbol.
---
---  `Null` represents the null symbol.
---
---  `T` represents a terminal symbol.
---
---  `NT` represents a terminal symbol.
-data Symbol a = Start
-              | Null
-              | T a
-              | NT a
-              | UD a
+data Symbol a = Start -- ^ represents the starting symbol.
+              | Null  -- ^ represents the null symbol.
+              | T a   -- ^ represents a terminal symbol.
+              | NT a  -- ^ represents a non-terminal symbol.
+              | UD a  -- ^ represents an undetermined symbol, used internally.
             deriving (Eq, Show, Ord)
 
 type ProductRule t = (Symbol t, [Symbol t])

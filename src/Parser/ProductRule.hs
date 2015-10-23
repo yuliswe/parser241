@@ -1,6 +1,15 @@
--- | Originally desgined as a cheating tool for cs241, a course offered in the University of Waterloo.
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Parser.ProductRule
+-- Copyright   :  See LICENSE
 --
--- This module contains everything you need to define an augmented grammar.
+-- Maintainer  :  ylilarry@gmail.com
+-- Stability   :  Experimental
+-- Portability :  Non-portable (GHC extensions)
+--
+-- = Introduction
+--
+-- __This module contains everything you need to define an augmented grammar.__
 --
 -- This module is a monadic interface to define an augmented grammar.
 -- The function `productRules` defined in this package takes in an abstract syntax tree representation,
@@ -48,6 +57,8 @@
 -- where `NT` represents non-terminal type, and `T` represents terminal type.
 --
 -- This package does not parse the input in any way. It just simplifies the way you can define the grammar.
+--
+-----------------------------------------------------------------------------
 
 module Parser.ProductRule (
       Symbol(Start, Null, NT, T)
