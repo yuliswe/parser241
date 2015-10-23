@@ -2,21 +2,22 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveFunctor #-}
 
-module Parser.ProductRule.Interface.Manager where
+module Parser.ProductRule.Internal.Manager where
 
-import Parser.ProductRule.Interface.Maker
+import Parser.ProductRule.Internal.Maker
 import Control.Monad.Writer (Writer(..), runWriter, tell, MonadWriter(..))
 import Parser.ProductRule.Internal
 import Data.Set (Set)
 import qualified Data.Set as S (fromList)
 import Control.Monad (mzero)
 
--- | (lhs, nonterms -> product rule)
+
 newtype Manager' a x = Manager {
       unManager :: Writer [Maker a] x
    } deriving (Functor, Applicative, Monad, MonadWriter [Maker a])
 
 type Manager a = Manager' a ()
+
 
 getMakers :: Manager a -> [Maker a]
 getMakers m = snd $ runWriter $ unManager m
@@ -50,6 +51,7 @@ getNTs a = S.fromList $ do
       _ -> mzero
 
 
+-- | Collect the defined syntax and produces a list of production rules.
 productRules :: (Ord a) => Manager a -> [ProductRule a]
 productRules a = getRules a $ getNTs a
 
