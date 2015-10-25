@@ -2,9 +2,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveFunctor #-}
 
-module Parser.ProductRule.Internal.Maker where
+module Parser.ProductionRule.Internal.Maker where
 
-import Parser.ProductRule.Internal
+import Parser.ProductionRule.Internal
 import Data.Set (Set, singleton)
 import Control.Monad.Reader (Reader(..), runReader, MonadReader(..), reader)
 
@@ -24,7 +24,7 @@ maker = Maker
 --
 --   Only one symbol is allowed on the left hand side.
 --
--- > table :: [ProductRule MySym]
+-- > table :: [Rule MySym]
 -- > table = productRules $ do
 -- >    Start ---> A & B ...
 -- >            ...
@@ -39,7 +39,7 @@ lhs ---> rhs = fromMaker $ maker (lhs, [[UD rhs]])
 --
 -- | Use `&` to concatenate two user-defined symbols.
 --
--- > table :: [ProductRule MySym]
+-- > table :: [Rule MySym]
 -- > table = productRules $ do
 -- >    Start ---> ...
 -- >            ...
@@ -53,7 +53,7 @@ lhs --> rhs = fromMaker $ NT lhs ---> rhs
 
 -- | Use `&` to concatenate two symbols.
 --
--- > table :: [ProductRule MySym]
+-- > table :: [Rule MySym]
 -- > table = productRules $ do
 -- >    Start >>> Null & C'
 -- >           |> ...
@@ -67,7 +67,7 @@ a & b = fromMaker $ maker (lhs, (UD b:r):rhs)
 -- | Use `|>` to represent "or" when the left hand side can produce two different expressions,
 -- and the right side is a user-defined type.
 --
--- > table :: [ProductRule MySym]
+-- > table :: [Rule MySym]
 -- > table = productRules $ do
 -- >    Start ---> ...
 -- >            ...
@@ -81,7 +81,7 @@ m |> a = fromMaker $ maker (lhs, [UD a]:rhs)
 
 -- | Use `|/` iff the right hand side is the `Null` symbol.
 --
--- > table :: [ProductRule MySym]
+-- > table :: [Rule MySym]
 -- > table = productRules $ do
 -- >    Start ---> C'
 -- >            |/ Null
@@ -96,7 +96,7 @@ _ |/ _ = error "(|/) can only be used in |/ Null"
 
 -- | Use `>>>` iff the left hand side is `Start` and the first symbol on the right side is `Null`.
 --
--- > table :: [ProductRule MySym]
+-- > table :: [Rule MySym]
 -- > table = productRules $ do
 -- >    Start >>> Null
 -- >           |> C'

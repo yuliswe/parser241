@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Parser.ProductRule
+-- Module      :  Parser.ProductionRule
 -- Copyright   :  See LICENSE
 --
 -- Maintainer  :  ylilarry@gmail.com
@@ -12,7 +12,7 @@
 -- __This module contains everything you need to define an augmented grammar.__
 --
 -- This module is a monadic interface to define an augmented grammar.
--- The function `productRules` defined in this package takes in an abstract syntax tree representation,
+-- The function `rules` defined in this package takes in an abstract syntax tree representation,
 -- and produces a production rule table, in which non-terminal and terminal symbols are labeled,
 -- and can be further used by you parser project.
 --
@@ -26,8 +26,8 @@
 --
 -- where A B are non-terminal symbols, 'C 'D are terminal symbols, we can define a production rule table:
 --
--- > table :: [ProductRule MySym]
--- > table = productRules $ do
+-- > table :: [Rule MySym]
+-- > table = rules $ do
 -- >
 -- >    Start ---> A & C' & B  -- AC'B concatenation
 -- >            |> A
@@ -44,13 +44,9 @@
 --
 -- >>> print $ table
 -- >
--- >  [    (Start, [NT A, T C', NT B])
--- >     , (Start, [NT A])
--- >     , (Start, [T C'])
--- >     , (NT A, [NT B])
--- >     , (NT A, [NT A, T C'])
--- >     , (NT A, [Null])
--- >     , (NT B, [T C'])
+-- >  [    (Start, [ [NT A, T C', NT B] , [NT A]       , [T C'] ])
+-- >     , (NT A,  [ [NT B]             , [NT A, T C'] , [Null] ])
+-- >     , (NT B,  [ [T C']                                     ])
 -- >  ]
 -- >
 --
@@ -60,10 +56,11 @@
 --
 -----------------------------------------------------------------------------
 
-module Parser.ProductRule (
+module Parser.ProductionRule (
       Symbol(Start, Null, NT, T)
-    , ProductRule
-    , productRules
+    , Rule
+    , RuleMap
+    , rules
     -- * Production Rule Construction
     , (--->)
     , (-->)
@@ -73,15 +70,17 @@ module Parser.ProductRule (
     , (>>>)
   ) where
 
-import Parser.ProductRule.Internal as X (
-        ProductRule(..)
+import Parser.ProductionRule.Internal as X (
+        Rule(..)
       , Symbol(..)
+      , RuleMap(..)
    )
-import Parser.ProductRule.Internal.Manager as X (
-        productRules
+import Parser.ProductionRule.Internal.Manager as X (
+        rules
+      , ruleMap
    )
-import Parser.ProductRule.Internal.Maker
-import Parser.ProductRule.Internal.Maker as X (
+import Parser.ProductionRule.Internal.Maker
+import Parser.ProductionRule.Internal.Maker as X (
         (-->)
       , (--->)
       , (|>)

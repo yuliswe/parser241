@@ -1,7 +1,9 @@
 import Test.Hspec
 
-import Test.Parser as Parser
+import Test.ProductionRule
+import Test.PredictorTable
 
 main :: IO ()
 main = do
-   Parser.test
+   Test.ProductionRule.test
+   Test.PredictorTable.test
