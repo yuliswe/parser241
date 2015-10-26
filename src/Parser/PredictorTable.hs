@@ -9,6 +9,9 @@ import Data.Set as S (Set, difference, fromList, toList)
 import Data.Maybe (catMaybes, mapMaybe, fromJust)
 import Data.Map as M (Map, fromList, lookup, empty, toList, member, insert)
 import Control.Monad.State (State, runState, state, put, get)
+import Control.Monad (filterM)
+
+import Debug.Trace
 
 type Cache a = Map (Symbol a, Int) [Symbol a]
 type WithCache a b = State (Cache a) b
@@ -26,7 +29,7 @@ putCache a n rhs = do
    return rhs
 
 
-nthTs :: (Ord a)
+nthTs :: (Ord a, Show a)
       => Symbol a
       -> Int                    -- ^ `n`-th symbols
       -> RuleMap a              -- ^ rules
@@ -35,12 +38,12 @@ nthTs (T a) 1 _ = return [T a]
 nthTs (T _) _ _ = return []
 nthTs a n rs = f =<< lookupCache a n
    where
-      f (Just ls) = return ls
+      f (Just ls) = return $ trace ("lookup"++ show a ++ show n) ls
       f Nothing   = concat <$> sequence [ nthTsR rhs n rs | rhs <- fromJust $ M.lookup a rs ]
-         >>= putCache a n
+         >>= trace ("cache"++show a++show n) . putCache a n
 
 
-nthTsR :: (Ord a)
+nthTsR :: (Ord a, Show a)
        => [Symbol a] -- ^ rhs
        -> Int        -- ^ nth
        -> RuleMap a  -- ^ rules
@@ -52,26 +55,22 @@ nthTsR (r:rs) n rules = do
    b <- nthTsR rs (n-1) rules
    return $ a ++ b
 
-chooseRule :: (Ord a)
-           => Symbol a   -- ^ LHS non-terminal symbol A to derive from
-           -> [a]        -- ^ next input terminal symbols
-           -> RuleMap a  -- ^ production rule map
-           -> [Symbol a] -- ^ correct RHS of A to derive to
+chooseRule :: (Ord a, Show a)
+           => Symbol a               -- ^ LHS non-terminal symbol A to derive from
+           -> [a]                    -- ^ next input terminal symbols
+           -> RuleMap a              -- ^ production rule map
+           -> WithCache a [Symbol a] -- ^ correct RHS of A to derive to
 chooseRule lhs ins rules = chooseRuleR 1 (fromJust $ M.lookup lhs rules) (map T ins) rules
 
 
-chooseRuleR :: (Ord a)
-            => Int          -- ^ current n-th look ahead
-            -> [[Symbol a]] -- ^ current candidate RHS that have the same 0-n lookahead symbols
-            -> [Symbol a]   -- ^ next input terminal symbols
-            -> RuleMap a    -- ^ production rule map
-            -> [Symbol a]   -- ^ correct candidate RHS to derive to
-chooseRuleR _ [candidate] _ _ = candidate
-chooseRuleR n candidates (i:is) rules =
-   chooseRuleR
-      (n+1)
-      (filter (\rhs -> i `elem` fst (syms rhs)) candidates)
-      is
-      rules
-   where
-      syms rhs = runState (nthTsR rhs n rules) M.empty
+chooseRuleR :: (Ord a, Show a)
+            => Int                      -- ^ current n-th look ahead
+            -> [[Symbol a]]             -- ^ current candidate RHS that have the same 0-n lookahead symbols
+            -> [Symbol a]               -- ^ next input terminal symbols
+            -> RuleMap a                -- ^ production rule map
+            -> WithCache a [Symbol a]   -- ^ correct candidate RHS to derive to
+chooseRuleR _ [candidate] _ _ = return candidate
+chooseRuleR n candidates (i:is) rules = do
+   cs <- filterM (\x -> elem i <$> nthTsR x n rules) candidates
+   chooseRuleR (n+1) cs is rules
+chooseRuleR n cs ins rules = error $ show n ++ show cs ++ show ins ++ show rules
