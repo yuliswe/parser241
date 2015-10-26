@@ -4,9 +4,10 @@ import Test.Hspec
 import Parser.PredictorTable
 import Parser.ProductionRule
 import Data.Set as S (Set(..), fromList, difference, toList)
-import Data.Map as M (fromList, lookup)
+import Data.Map as M (fromList, lookup, empty)
 import Control.Arrow (second)
 import Data.Maybe (fromJust)
+import Control.Monad.State (State, runState)
 
 data MySym = A | B | C' | D' | E' deriving (Eq, Ord, Show)
 
@@ -28,8 +29,8 @@ test :: IO ()
 --       describe "toGraph" $ do
 
 
+runWithCache x = runState x M.empty
 
 test = do
-   print $ M.lookup Start $ M.fromList tableA
-   print $ nthTs Start 10 $ M.fromList tableA
+   print $ runWithCache $ nthTs Start 100 $ M.fromList tableA
    print $ chooseRule Start [D'] $ M.fromList tableA
