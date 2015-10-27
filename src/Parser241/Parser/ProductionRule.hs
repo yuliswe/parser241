@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Parser.ProductionRule
+-- Module      :  Parser241.Parser.ProductionRule
 -- Copyright   :  See LICENSE
 --
 -- Maintainer  :  ylilarry@gmail.com
@@ -56,7 +56,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Parser.ProductionRule (
+module Parser241.Parser.ProductionRule (
       Symbol(Start, Null, NT, T)
     , Rule
     , RuleMap
@@ -70,17 +70,17 @@ module Parser.ProductionRule (
     , (>>>)
   ) where
 
-import Parser.ProductionRule.Internal as X (
+import Parser241.Parser.ProductionRule.Internal as X (
         Rule(..)
       , Symbol(..)
       , RuleMap(..)
    )
-import Parser.ProductionRule.Internal.Manager as X (
+import Parser241.Parser.ProductionRule.Internal.Manager as X (
         rules
       , ruleMap
    )
-import Parser.ProductionRule.Internal.Maker
-import Parser.ProductionRule.Internal.Maker as X (
+import Parser241.Parser.ProductionRule.Internal.Maker
+import Parser241.Parser.ProductionRule.Internal.Maker as X (
         (-->)
       , (--->)
       , (|>)

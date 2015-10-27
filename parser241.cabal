@@ -15,13 +15,23 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Parser.ProductionRule
-                     , Parser.ProductionRule.Internal
-                     , Parser.ProductionRule.Internal.Maker
-                     , Parser.ProductionRule.Internal.Manager
+  exposed-modules:
+                       Parser241
+                     , Parser241.Parser
+                     , Parser241.Parser.ProductionRule
+                     , Parser241.Parser.ProductionRule.Internal
+                     , Parser241.Parser.ProductionRule.Internal.Maker
+                     , Parser241.Parser.ProductionRule.Internal.Manager
+                     , Parser241.Parser.PredictorTable
+                     , Parser241.Parser.PredictorTable.Internal
+                     , Parser241.Lexer
+                     , Parser241.Lexer.Internal
+
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , mtl
+                     , hspec
+                     , regex-compat-tdfa
   default-language:    Haskell2010
 
 test-suite test
@@ -33,6 +43,7 @@ test-suite test
                      , containers
                      , mtl
                      , hspec
+                     , regex-compat-tdfa
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 

@@ -2,9 +2,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveFunctor #-}
 
-module Parser.ProductionRule.Internal.Maker where
+module Parser241.Parser.ProductionRule.Internal.Maker where
 
-import Parser.ProductionRule.Internal
+import Parser241.Parser.ProductionRule.Internal
 import Data.Set (Set, singleton)
 import Control.Monad.Reader (Reader(..), runReader, MonadReader(..), reader)
 

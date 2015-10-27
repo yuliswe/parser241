@@ -1,4 +1,4 @@
-module Parser.ProductionRule.Internal where
+module Parser241.Parser.ProductionRule.Internal where
 
 import Data.Set (Set, member)
 import Data.Map as M (Map)

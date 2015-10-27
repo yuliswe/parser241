@@ -1,8 +1,8 @@
 module Test.ProductionRule where
 
 import Test.Hspec
-import Parser.ProductionRule
-import Parser.ProductionRule.Internal (Symbol(..))
+import Parser241.Parser.ProductionRule
+import Parser241.Parser.ProductionRule.Internal (Symbol(..))
 import Data.Set as S (Set(..), fromList)
 import Data.Map as M (fromList)
 import Control.Arrow (second)

@@ -2,11 +2,11 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveFunctor #-}
 
-module Parser.ProductionRule.Internal.Manager where
+module Parser241.Parser.ProductionRule.Internal.Manager where
 
-import Parser.ProductionRule.Internal.Maker
+import Parser241.Parser.ProductionRule.Internal.Maker
 import Control.Monad.Writer (Writer(..), runWriter, tell, MonadWriter(..))
-import Parser.ProductionRule.Internal
+import Parser241.Parser.ProductionRule.Internal
 import Data.Set as S (Set)
 import Data.Map as M (Map, fromList)
 import qualified Data.Set as S (fromList)
