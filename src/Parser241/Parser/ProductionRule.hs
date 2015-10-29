@@ -52,7 +52,7 @@
 --
 -- where `NT` represents non-terminal type, and `T` represents terminal type.
 --
--- This package does not parse the input in any way. It just simplifies the way you can define the grammar.
+-- __This package does not parse the input in any way. It just simplifies the way you can define the grammar.__
 --
 -----------------------------------------------------------------------------
 
