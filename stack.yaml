@@ -3,5 +3,6 @@ extra-package-dbs: []
 packages:
 - '.'
 extra-deps:
+- ListWriter-0.1.0.0
 - regex-compat-tdfa-0.95.1.4
 resolver: lts-3.4

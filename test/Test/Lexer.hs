@@ -2,17 +2,23 @@ module Test.Lexer where
 
 import Parser241.Lexer.Internal
 import Test.Hspec
+import Syntax.ListWriter as Syn
 
-data MySym = A | B | C | D deriving (Show, Eq, Ord)
+data MySym = LBrace | RBrace | Type | Identifer | Space deriving (Show, Eq, Ord)
 
 table0 :: [TokenReader MySym]
-table0 = do
-   "a" =: A
+table0 = tokens $ do
+   "\\{" =: LBrace
+   "\\}" =: RBrace
+   "\\s" =: Space
+   "int" =: Type
+   " " =: Space
+   "[A-z]+" =: Identifer
 
 
 test :: IO ()
 test = hspec $
-   specify "runLexer" $ do
-      putStrLn "Hello World"
-      putStrLn "Hello World"
-      print $ runLexer "aa" table0
+   describe "Lexer" $ do
+      specify "runLexer" $ do
+         print $ runLexer "int intmain" table0
+         -- print $ runLexer "int main() {}" table0
