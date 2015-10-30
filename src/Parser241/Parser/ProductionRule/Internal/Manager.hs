@@ -64,3 +64,5 @@ ruleMap = M.fromList . rules
 instance FromMaker Manager' where
    fromMaker = singleton
 
+
+

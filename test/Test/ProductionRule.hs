@@ -54,28 +54,28 @@ test = hspec $ do
       it "rules" $
          ignoreOrder tableA `shouldBe` ignoreOrder [
               (Start, [
-                        [NT A0, T B0, T C0],
-                        [NT A0, T B0],
-                        [Null] ])
+                        [NT A0, T B0, T C0, EOF],
+                        [NT A0, T B0, EOF],
+                        [Null, EOF] ])
             , (NT A0, [
-                        [T B0, T C0, NT A0],
-                        [NT A0, T C0],
-                        [Null] ])
+                        [T B0, T C0, NT A0, EOF],
+                        [NT A0, T C0, EOF],
+                        [Null, EOF] ])
          ]
 
    describe "sampleTableB" $
       it "rules" $
          ignoreOrder tableB `shouldBe` ignoreOrder [
-              (Start, [ [NT A, T C', NT B],
-                        [NT A],
-                        [T C'] ] )
-            , (NT A, [ [NT B],
-                       [NT A, T C'],
-                       [Null] ])
-            , (NT B, [ [T C'] ])
+              (Start, [ [NT A, T C', NT B, EOF],
+                        [NT A, EOF],
+                        [T C', EOF] ] )
+            , (NT A, [ [NT B, EOF],
+                       [NT A, T C', EOF],
+                       [Null, EOF] ])
+            , (NT B, [ [T C', EOF] ])
          ]
 
    describe "sampleTableC" $
       it "rules" $
-         ignoreOrder tableC `shouldBe` ignoreOrder [(Start, [ [Null, T C'], [T C'] ])]
+         ignoreOrder tableC `shouldBe` ignoreOrder [(Start, [ [Null, T C', EOF], [T C', EOF] ])]
 

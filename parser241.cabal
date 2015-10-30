@@ -1,5 +1,5 @@
 name:                parser241
-version:             0.1.0.2
+version:             1.0.0.0
 synopsis:            An interface to create production rules using augmented grammars
 description:         This package allows you to define production rules using clean augmented grammars.
 homepage:            https://github.com/YLiLarry/parser241-product-rule
@@ -18,6 +18,8 @@ library
   exposed-modules:
                        Parser241
                      , Parser241.Parser
+                     , Parser241.Parser.LL
+                     , Parser241.Parser.LL.Internal
                      , Parser241.Parser.ProductionRule
                      , Parser241.Parser.ProductionRule.Internal
                      , Parser241.Parser.ProductionRule.Internal.Maker
@@ -39,6 +41,17 @@ test-suite test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test, src
   main-is:             Spec.hs
+  other-modules:
+                       Parser241.Lexer.Internal
+                     , Parser241.Parser.PredictorTable
+                     , Parser241.Parser.PredictorTable.Internal
+                     , Parser241.Parser.ProductionRule
+                     , Parser241.Parser.ProductionRule.Internal
+                     , Parser241.Parser.ProductionRule.Internal.Maker
+                     , Parser241.Parser.ProductionRule.Internal.Manager
+                     , Test.Lexer
+                     , Test.PredictorTable
+                     , Test.ProductionRule
   build-depends:       base
                      , parser241
                      , containers

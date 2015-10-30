@@ -5,7 +5,8 @@ import Text.Regex (matchRegexAll, mkRegex)
 import Data.Maybe (mapMaybe)
 import Data.List (maximumBy)
 import Syntax.ListWriter as Syn (ListM, element, toList)
-
+import Control.Arrow (first)
+import Parser241.Parser
 
 -- | A @TokenReader@ function takes @/tokenizedInput/@ and @/currentInput/@
 --
@@ -14,25 +15,26 @@ import Syntax.ListWriter as Syn (ListM, element, toList)
 -- @Just (/tokenizedInput/, /matchedInput/, /restInput/, /userSymbol/)@, otherwise @Nothing@
 type TokenReader a = [Token a] -> String -> Maybe ([Token a], String, String, a)
 
-type Token a = (a, String)
+type Token a = (Symbol a, String)
 type RegexExp = String
 
 tokens :: ListM (TokenReader a) -> [TokenReader a]
 tokens = Syn.toList
 
-runLexer :: (Show a) => String -> [TokenReader a] -> [Token a]
-runLexer ins tReaders = reverse $ runLexerAcc ins tReaders []
 
-runLexerAcc :: (Show a) => String -> [TokenReader a] -> [Token a] -> [Token a]
-runLexerAcc "" tReaders tokenized = tokenized
-runLexerAcc ins tReaders tokenized
+runLexer :: (Show a) => [TokenReader a] -> String -> [Token a]
+runLexer tReaders ins = reverse $ ((EOF,"") :) $ runLexerAcc tReaders ins []
+
+
+runLexerAcc :: (Show a) => [TokenReader a] -> String -> [Token a] -> [Token a]
+runLexerAcc tReaders "" tokenized = tokenized
+runLexerAcc tReaders ins tokenized
    | null matches = error $ "Unrecognized token: " ++ ins
-   | otherwise = runLexerAcc restIns tReaders $ (sym, str) : tokenized
+   | otherwise = runLexerAcc tReaders restIns $ (T sym, str) : tokenized
    where
       matches = mapMaybe (\f -> f tokenized ins) tReaders
       longestMatch (_,m,_,_) (_,m',_,_) = compare (length m) (length m')
       (_, str, restIns, sym) = maximumBy longestMatch matches
-
 
 
 (=:) :: RegexExp -> a -> ListM (TokenReader a)
@@ -57,3 +59,5 @@ matchRegex :: RegexExp -> Matcher a
 matchRegex regex tokenized input = do
    (_, matched, after, _) <- matchRegexAll (mkRegex $ "^" ++ regex) input
    return (tokenized, matched, after)
+
+

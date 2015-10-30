@@ -9,6 +9,7 @@ data Symbol a = Start -- ^ represents the starting symbol.
               | T a   -- ^ represents a terminal symbol.
               | NT a  -- ^ represents a non-terminal symbol.
               | UD a  -- ^ represents an undetermined symbol, used internally.
+              | EOF   -- ^ EOF
             deriving (Eq, Show, Ord)
 
 type Rule t = (Symbol t, [[Symbol t]])
@@ -22,7 +23,8 @@ isT _     = False
 
 -- | non-terms -> lhs -> rhs -> product rule
 rule :: (Ord a) => Symbol a -> [[Symbol a]] -> Rule a
-rule = (,)
+rule Start rhsLs = (Start, map (++[EOF]) rhsLs)
+rule a rhsLs = (a, rhsLs)
 
 
 -- | non-terms

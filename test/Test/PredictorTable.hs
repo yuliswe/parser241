@@ -94,4 +94,4 @@ runWithCache x = runState x M.empty
 
 test = hspec $ do
    specify "nthTs" $ do
-      print $ chooseRule Start [A, A, A, A, A, A, A, A, A, A, A, A, A, A, A, A] $ M.fromList tableA
+      print $ chooseRule Start [T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, EOF] $ M.fromList tableA

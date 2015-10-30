@@ -57,10 +57,11 @@
 -----------------------------------------------------------------------------
 
 module Parser241.Parser.ProductionRule (
-      Symbol(Start, Null, NT, T)
+      Symbol(Start, Null, NT, T, EOF)
     , Rule
     , RuleMap
     , rules
+    , ruleMap
     -- * Production Rule Construction
     , (--->)
     , (-->)

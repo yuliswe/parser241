@@ -12,7 +12,7 @@ table0 = tokens $ do
    "\\}" =: RBrace
    "\\s" =: Space
    "int" =: Type
-   " " =: Space
+   " "   =: Space
    "[A-z]+" =: Identifer
 
 
@@ -20,5 +20,5 @@ test :: IO ()
 test = hspec $
    describe "Lexer" $ do
       specify "runLexer" $ do
-         print $ runLexer "int intmain" table0
+         print $ runLexer table0 "int intmain"
          -- print $ runLexer "int main() {}" table0
