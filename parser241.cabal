@@ -28,6 +28,8 @@ library
                      , Parser241.Parser.PredictorTable.Internal
                      , Parser241.Lexer
                      , Parser241.Lexer.Internal
+                     , Parser241.Debug
+                     , Parser241.Debug.Internal
 
   build-depends:       base >= 4.7 && < 5
                      , containers

@@ -58,9 +58,9 @@ test = hspec $ do
                         [NT A0, T B0, EOF],
                         [Null, EOF] ])
             , (NT A0, [
-                        [T B0, T C0, NT A0, EOF],
-                        [NT A0, T C0, EOF],
-                        [Null, EOF] ])
+                        [T B0, T C0, NT A0],
+                        [NT A0, T C0],
+                        [Null] ])
          ]
 
    describe "sampleTableB" $
@@ -69,10 +69,10 @@ test = hspec $ do
               (Start, [ [NT A, T C', NT B, EOF],
                         [NT A, EOF],
                         [T C', EOF] ] )
-            , (NT A, [ [NT B, EOF],
-                       [NT A, T C', EOF],
-                       [Null, EOF] ])
-            , (NT B, [ [T C', EOF] ])
+            , (NT A, [ [NT B],
+                       [NT A, T C'],
+                       [Null] ])
+            , (NT B, [ [T C'] ])
          ]
 
    describe "sampleTableC" $

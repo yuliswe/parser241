@@ -84,14 +84,21 @@ tableA = rules $ do
            |> A & A & A & A & A & A & A & A & A & A & A & A & A & A & A & B
            |> A & A & A & A & A & A & A & A & A & A & A & A & A & A & A & B
 
+
+data SymOp = Arith | Add' | Int' | TFac deriving (Show, Eq, Ord)
+
+tableC :: RuleMap SymOp
+tableC = ruleMap $ do {
+      Start ---> Arith
+   ;   Arith --> Int' & Add' & TFac
+
+   ;       TFac --> Int'
+
+   }
+
 test :: IO ()
--- test = hspec $ do
---    specify "PredictorTable" $ do
---       describe "toGraph" $ do
-
-
-runWithCache x = runState x M.empty
-
 test = hspec $ do
    specify "nthTs" $ do
-      print $ chooseRule Start [T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, EOF] $ M.fromList tableA
+      -- print $ chooseRule Start [T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, T A, EOF] $ M.fromList tableA
+      print $ chooseRule (NT Arith) [T Int',T Add',T Int',EOF] tableC
+      print $ chooseRule (NT Arith) [T Int',EOF] tableC
