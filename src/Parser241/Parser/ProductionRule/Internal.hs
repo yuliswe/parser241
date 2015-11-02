@@ -20,6 +20,23 @@ isT :: Symbol a -> Bool
 isT (T a) = True
 isT _     = False
 
+isTerm :: Symbol a -> Bool
+isTerm (T _) = True
+isTerm EOF = True
+isTerm Null = True
+isTerm _ = False
+
+isNonTerm :: Symbol a -> Bool
+isNonTerm (NT _) = True
+isNonTerm Start = True
+isNonTerm _ = False
+
+
+isNP :: Symbol a -> Bool
+isNP Start = True
+isNP Null = True
+isNP EOF = True
+isNP _ = False
 
 -- | non-terms -> lhs -> rhs -> product rule
 rule :: (Ord a) => Symbol a -> [[Symbol a]] -> Rule a

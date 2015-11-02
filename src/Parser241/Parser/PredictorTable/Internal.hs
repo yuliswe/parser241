@@ -1,28 +1,39 @@
 module Parser241.Parser.PredictorTable.Internal where
 
 
-import Parser241.Parser.ProductionRule (Rule, Symbol(..), RuleMap)
+import Parser241.Parser.ProductionRule (Rule, Symbol(..), RuleMap, isTerm, isNonTerm)
 import Parser241.Parser.ProductionRule.Internal (unsetSym, isT)
 import Control.Arrow (second)
 import Data.Set as S (Set, difference, fromList, toList)
 import Data.Maybe (catMaybes, mapMaybe, fromJust, fromMaybe)
-import Data.Map.Lazy as M (Map, fromList, lookup)
+import Data.Map.Lazy as M (Map, fromList, lookup, toList)
 import Parser241.Debug
 import Data.Foldable (foldMap)
 import Control.Monad (filterM, when, liftM2)
+
+fstTs :: (Ord a, Show a)
+      => Symbol a   -- ^ LHS
+      -> RuleMap a  -- ^ rules
+      -> WithLog [Symbol a] -- ^ n-th symbols
+fstTs lhs = nthTs lhs 1
+
+fstTsR :: (Ord a, Show a)
+       => [Symbol a] -- ^ rhs
+       -> RuleMap a  -- ^ rules
+       -> WithLog [Symbol a]
+fstTsR rhs = nthTsR rhs 1
+
 
 nthTs :: (Ord a, Show a)
       => Symbol a   -- ^ LHS
       -> Int        -- ^ `n`-th symbols
       -> RuleMap a  -- ^ rules
       -> WithLog [Symbol a] -- ^ n-th symbols
-nthTs (T a) 1 _ = return [T a]
-nthTs (T _) _ _ = return []
-nthTs EOF _ _ = return []
-nthTs Null _ _ = return []
-nthTs a n rs = do
-   rhsLs <- lookupRHSLs a rs
-   concat <$> sequence [ nthTsR rhs n rs | rhs <- rhsLs ]
+nthTs a n rs
+   | isTerm a = return [a | n == 1]
+   | isNonTerm a = do
+         rhsLs <- lookupRHSLs a rs
+         concat <$> sequence [ nthTsR rhs n rs | rhs <- rhsLs ]
 
 
 nthTsR :: (Ord a, Show a)
@@ -52,17 +63,55 @@ nullable Null _ = return True
 nullable EOF  _ = return False
 nullable (T _) _ = return False
 nullable lhs rules = do
+   chooseRuleLog $ printf "Check if %s is nullable." (show lhs)
    rhs  <- nthTs lhs 1 rules
    rhsLs <- lookupRHSLs lhs rules
-   bool <- and <$> mapM (`nullableR` rules) rhsLs
-   return $ elem Null rhs || bool
+   bool <- or <$> mapM (`nullableR` rules) rhsLs
+   bool <- return $ elem Null rhs || bool
+   chooseRuleLog $ printf "Result is %s." (show bool)
+   return bool
 
 
 nullableR :: (Ord a, Show a)
          => [Symbol a]
          -> RuleMap a
          -> WithLog Bool
-nullableR rhs rules = and <$> mapM (`nullable` rules) rhs
+nullableR rhs rules = all (Null `elem`) <$>
+   mapM (\lhs -> nthTs lhs 1 rules) rhs
+
+
+followR :: (Ord a, Show a)
+        => Symbol a              -- ^ followed
+        -> Symbol a              -- ^ lhs
+        -> [Symbol a]            -- ^ rhs symbols
+        -> RuleMap a
+        -> WithLog [Symbol a]
+followR a lhs [] rules
+   | a == lhs = return []
+   | otherwise = follow lhs rules
+followR a lhs r@(s:_) rules
+   | isNonTerm a && isTerm s = return [s]
+   | isNonTerm a && isNonTerm s = do
+      a <- fstTsR r rules
+      bool <- nullableR r rules
+      b <- follow lhs rules
+      parserLog $ "followR " ++ show b
+      return $ if bool then a ++ b else a
+
+
+follow :: (Ord a, Show a) => Symbol a -> RuleMap a -> WithLog [Symbol a]
+follow a rules = concat <$> sequence
+   [ followR a lhs p rules | (lhs, p) <- ls ]
+   where ls = [ (lhs, p) | (lhs, rhsLs) <- M.toList rules, rhs <- rhsLs, p <- partsAfter a rhs ]
+
+
+partsAfter :: (Eq a) => Symbol a -> [Symbol a] -> [[Symbol a]]
+partsAfter _ [] = []
+partsAfter x ls
+   | null a = []
+   | otherwise = a' : partsAfter x a'
+   where (_,a) = break (== x) ls
+         a' = tail a
 
 
 chooseRule :: (Ord a, Show a)
@@ -72,22 +121,44 @@ chooseRule :: (Ord a, Show a)
            -> WithLog [Symbol a] -- ^ correct RHS of A to derive to
 chooseRule EOF _ _ = throwError "You called chooseRule with EOF as the LHS."
 chooseRule lhs ins rules = do
+   chooseRuleLog $ printf "called:\n lhs: %s\n ins: %s\n rules: %s" (show lhs) (show ins) (show rules)
    x <- lookupRHSLs lhs rules
-   chooseRuleR 1 x ins rules
+   chooseRuleR lhs 1 x ins rules
 
 
 chooseRuleR :: (Ord a, Show a)
-            => Int          -- ^ current n-th look ahead
+            => Symbol a     -- ^ lhs
+            -> Int          -- ^ current n-th look ahead
             -> [[Symbol a]] -- ^ current candidate RHS that have the same 0-n lookahead symbols
             -> [Symbol a]   -- ^ next input terminal symbols
             -> RuleMap a    -- ^ production rule map
             -> WithLog [Symbol a]   -- ^ correct candidate RHS to derive to
-chooseRuleR _ [candidate] _ _ = return candidate
-chooseRuleR n candidates (i:is) rules = do
+chooseRuleR _ _ [candidate] _ _ = return candidate
+chooseRuleR lhs n candidates (i:is) rules = do
+   -- log
+   chooseRuleLog $ printf
+      "rhs candidates: %s\n next input: %s\n search for rhs whose first symbol is %s"
+      (show candidates) (show i) (show i)
+   -- code
    candidates' <- filterM (\x -> elem i <$> nthTsR x n rules) candidates
-   when (null candidates') (throwError $ "chooseRuleR: No production rule can be applied. Next input: " ++ show i++ "\nCandidates: " ++ show candidates)
-   chooseRuleR (n+1) candidates' is rules
-chooseRuleR n candidates [] rules = throwError $ "chooseRuleR: More than one production rule can be applied at EOF. The syntax is ambigous."
+   -- log
+   chooseRuleLog $ printf "Found: %s" (show candidates')
+   chooseRuleLog $ "Compute the follower set for lhs: " ++ show lhs
+   -- code
+   fs <- follow lhs rules
+   -- log
+   chooseRuleLog $ "Found: " ++ show fs
+   -- code
+   candidates'' <- if i `elem` fs then do
+                        chooseRuleLog $ printf "%s is in the follower set. Compute all nullable rhs." (show i)
+                        nc <- filterM (`nullableR` rules) candidates
+                        chooseRuleLog $ "Found: " ++ show nc
+                        return nc
+                   else return []
+   let candidates''' = candidates' ++ candidates''
+   when (null candidates''') (throwError $ "chooseRuleR: No production rule can be applied. Next input: " ++ show i++ "\nCandidates: " ++ show candidates)
+   chooseRuleR lhs (n+1) candidates''' is rules
+chooseRuleR _ n candidates [] rules = throwError $ "chooseRuleR: More than one production rule can be applied at EOF. The syntax is ambigous."
                                              ++ "\nCandidates: " ++ show candidates
 
 

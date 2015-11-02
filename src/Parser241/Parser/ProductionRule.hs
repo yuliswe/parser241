@@ -62,6 +62,9 @@ module Parser241.Parser.ProductionRule (
     , RuleMap
     , rules
     , ruleMap
+    , isTerm
+    , isNP
+    , isNonTerm
     -- * Production Rule Construction
     , (--->)
     , (-->)
@@ -71,11 +74,7 @@ module Parser241.Parser.ProductionRule (
     , (>>>)
   ) where
 
-import Parser241.Parser.ProductionRule.Internal as X (
-        Rule(..)
-      , Symbol(..)
-      , RuleMap(..)
-   )
+import Parser241.Parser.ProductionRule.Internal
 import Parser241.Parser.ProductionRule.Internal.Manager as X (
         rules
       , ruleMap
