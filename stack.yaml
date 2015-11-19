@@ -2,7 +2,11 @@ flags: {}
 extra-package-dbs: []
 packages:
 - '.'
+- '../parser241-lexer'
+- '../parser241-production-rule'
 extra-deps:
+- parser241-lexer-1.0.0.0
+- parser241-production-rule-1.0.0.0
 - ListWriter-0.1.0.0
 - regex-compat-tdfa-0.95.1.4
 resolver: lts-3.4

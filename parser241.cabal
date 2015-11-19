@@ -2,7 +2,7 @@ name:                parser241
 version:             1.0.0.0
 synopsis:            An interface to create production rules using augmented grammars
 description:         This package allows you to define production rules using clean augmented grammars.
-homepage:            https://github.com/YLiLarry/parser241-product-rule
+homepage:            https://github.com/YLiLarry/parser241-production-rule
 license:             BSD3
 license-file:        LICENSE
 author:              Yu Li
@@ -20,14 +20,8 @@ library
                      , Parser241.Parser
                      , Parser241.Parser.LL
                      , Parser241.Parser.LL.Internal
-                     , Parser241.Parser.ProductionRule
-                     , Parser241.Parser.ProductionRule.Internal
-                     , Parser241.Parser.ProductionRule.Internal.Maker
-                     , Parser241.Parser.ProductionRule.Internal.Manager
                      , Parser241.Parser.PredictorTable
                      , Parser241.Parser.PredictorTable.Internal
-                     , Parser241.Lexer
-                     , Parser241.Lexer.Internal
                      , Parser241.Debug
                      , Parser241.Debug.Internal
 
@@ -35,8 +29,8 @@ library
                      , containers
                      , mtl
                      , hspec
-                     , regex-compat-tdfa
-                     , ListWriter
+                     , parser241-lexer
+                     , parser241-production-rule
   default-language:    Haskell2010
 
 test-suite test
@@ -44,26 +38,25 @@ test-suite test
   hs-source-dirs:      test, src
   main-is:             Spec.hs
   other-modules:
-                       Parser241.Lexer.Internal
-                     , Parser241.Parser.PredictorTable
+                       Parser241.Parser.PredictorTable
                      , Parser241.Parser.PredictorTable.Internal
-                     , Parser241.Parser.ProductionRule
-                     , Parser241.Parser.ProductionRule.Internal
-                     , Parser241.Parser.ProductionRule.Internal.Maker
-                     , Parser241.Parser.ProductionRule.Internal.Manager
-                     , Test.Lexer
+                     , Parser241.Debug
+                     , Parser241.Debug.Internal
+                     , Parser241.Parser
+                     , Parser241.Parser.LL
+                     , Parser241.Parser.LL.Internal
+                     , Test.Parser
                      , Test.PredictorTable
-                     , Test.ProductionRule
   build-depends:       base
                      , parser241
                      , containers
                      , mtl
                      , hspec
-                     , regex-compat-tdfa
-                     , ListWriter
+                     , parser241-lexer
+                     , parser241-production-rule
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 source-repository head
   type:     git
-  location: https://github.com/YLiLarry/parser241-product-rule
+  location: https://github.com/YLiLarry/parser241
